@@ -17,6 +17,8 @@ export interface User {
   preferred_language: Locale;
   placement_completed: boolean;
   suggested_course: Course | null;
+  bio?: string | null;
+  avatar_url?: string | null;
 }
 
 export interface Course {
@@ -53,6 +55,44 @@ export interface CourseDetail extends Course {
   rating: number | null;
 }
 
+export type LessonContentType = "video" | "audio" | "text" | "pdf";
+
+export interface LessonContentItem {
+  id: number;
+  type: LessonContentType;
+  /** Media/file URL for video, audio and pdf content. */
+  url: string | null;
+  /** Raw HTML body for `text` content (sanitized before rendering). */
+  html: string | null;
+  order: number;
+}
+
+/** A lesson within an enrolled course, with completion + content payload. */
+export interface LessonWithProgress extends Lesson {
+  section_id: number;
+  completed: boolean;
+  content: LessonContentItem[];
+  /** Normally false for enrolled students; guards the UI just in case. */
+  locked?: boolean;
+}
+
+export interface CourseSection {
+  id: number;
+  course_id: number;
+  title: string;
+  order: number;
+  lessons: LessonWithProgress[];
+}
+
+/** Full learning payload for an enrolled course (player view). */
+export interface CourseContent {
+  enrollment_id: number;
+  course: Course;
+  sections: CourseSection[];
+  progress: number; // 0–100
+  completed: boolean;
+}
+
 export interface Enrollment {
   id: number;
   user_id: number;
@@ -60,8 +100,20 @@ export interface Enrollment {
   progress: number; // 0–100
   completed: boolean;
   enrolled_at: string;
+  last_accessed_at?: string | null;
   /** Embedded course, when the API expands the relation (list endpoints). */
   course?: Course;
+}
+
+export interface Certificate {
+  id: number;
+  course_id: number;
+  course_title: string;
+  issued_at: string;
+  /** Human-readable unique serial / certificate ID. */
+  serial: string;
+  pdf_url: string | null;
+  share_url: string;
 }
 
 export interface Notification {

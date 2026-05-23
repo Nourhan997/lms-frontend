@@ -12,7 +12,7 @@ Next.js 14 (App Router) · TypeScript · Tailwind · React Query · Zustand · n
 - **Components stay small and single-responsibility.** Split when a component grows past one clear job.
 - **Every async operation has a loading state.** Use `isPending` / `isLoading` from the hook — never leave a blank screen.
 - **Every query handles its error state.** Surface `isError` / `error`; don't ignore failures.
-- **Never use `dangerouslySetInnerHTML`.** Render content safely.
+- **Never use `dangerouslySetInnerHTML` EXCEPT in `LessonContent.tsx`** for instructor-authored rich text content. Must always be sanitized with `isomorphic-dompurify` before injection. This is the single sanctioned use — never add more without explicit review. Render all other content safely.
 - **Images → always `next/image`.** Never `<img>`.
 - **API calls → always through `lib/api/` functions.** Never call `fetch` or `axios` directly inside a component; add/extend an endpoint function and a React Query hook instead.
 
