@@ -12,7 +12,7 @@ import {
   type CourseListParams,
   type CreateCoursePayload,
 } from "@/lib/api/courses";
-import type { ApiError, Course, Paginated } from "@/lib/types";
+import type { ApiError, Course, CourseDetail, Paginated } from "@/lib/types";
 
 export const courseKeys = {
   all: ["courses"] as const,
@@ -28,7 +28,7 @@ export function useCourses(params: CourseListParams = {}) {
 }
 
 export function useCourse(slug: string) {
-  return useQuery<Course, ApiError>({
+  return useQuery<CourseDetail, ApiError>({
     queryKey: courseKeys.detail(slug),
     queryFn: () => getCourse(slug),
     enabled: Boolean(slug),

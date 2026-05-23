@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api/client";
-import type { Course, Paginated } from "@/lib/types";
+import type { Course, CourseDetail, Paginated } from "@/lib/types";
 
 export interface CourseListParams {
   page?: number;
@@ -16,8 +16,8 @@ export async function getCourses(
   return data;
 }
 
-export async function getCourse(slug: string): Promise<Course> {
-  const { data } = await apiClient.get<Course>(`/courses/${slug}`);
+export async function getCourse(slug: string): Promise<CourseDetail> {
+  const { data } = await apiClient.get<CourseDetail>(`/courses/${slug}`);
   return data;
 }
 

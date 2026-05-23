@@ -34,6 +34,25 @@ export interface Course {
   updated_at: string;
 }
 
+export interface Lesson {
+  id: number;
+  course_id: number;
+  title: string;
+  video_url: string | null;
+  duration_minutes: number;
+  order: number;
+  /** Free preview lessons are playable without enrolling. */
+  is_preview: boolean;
+}
+
+/** Course with its curriculum and aggregate metadata (detail endpoint). */
+export interface CourseDetail extends Course {
+  lessons: Lesson[];
+  instructor_name: string | null;
+  students_count: number;
+  rating: number | null;
+}
+
 export interface Enrollment {
   id: number;
   user_id: number;
@@ -41,6 +60,18 @@ export interface Enrollment {
   progress: number; // 0–100
   completed: boolean;
   enrolled_at: string;
+  /** Embedded course, when the API expands the relation (list endpoints). */
+  course?: Course;
+}
+
+export interface Notification {
+  id: number;
+  title: string;
+  body: string;
+  read: boolean;
+  created_at: string;
+  /** Optional in-app link to navigate to when the notification is opened. */
+  link?: string | null;
 }
 
 export interface Quiz {

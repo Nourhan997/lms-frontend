@@ -1,5 +1,7 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { cookieStorage } from "@/lib/store/cookieStorage";
+import { AUTH_COOKIE } from "@/lib/auth/shared";
 import type { User } from "@/lib/types";
 
 interface AuthState {
@@ -17,9 +19,10 @@ interface AuthState {
 }
 
 /**
- * Auth/session state. Persisted to localStorage so the session survives
- * reloads. Use this for auth + UI state only — server data belongs in
- * React Query, never here.
+ * Auth/session state. Persisted to a cookie (key `lms-auth`) — not
+ * localStorage — so the session is sent with every request and can be read by
+ * edge middleware for route protection. Use this for auth + UI state only;
+ * server data belongs in React Query, never here.
  *
  * Outside React (e.g. the axios interceptor), read with
  * `useAuthStore.getState()`.
@@ -38,7 +41,8 @@ export const useAuthStore = create<AuthState>()(
       isStudent: () => get().user?.role === "student",
     }),
     {
-      name: "lms-auth",
+      name: AUTH_COOKIE,
+      storage: createJSONStorage(() => cookieStorage),
       // Only persist serializable state, not the action functions.
       partialize: (state) => ({ token: state.token, user: state.user }),
     },
