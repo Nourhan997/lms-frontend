@@ -347,3 +347,147 @@ export interface AdminSettings {
   allow_self_registration: boolean;
   placement_test_required: boolean;
 }
+
+// ---------------------------------------------------------------------------
+// Reports
+// ---------------------------------------------------------------------------
+
+export type ReportPeriod = "daily" | "monthly" | "yearly";
+
+export interface TimeSeriesPoint {
+  label: string;
+  value: number;
+}
+
+export interface RevenueReportData {
+  series: TimeSeriesPoint[];
+  total: number;
+  this_month: number;
+  net: number;
+}
+
+export interface EnrollmentReportData {
+  series: TimeSeriesPoint[];
+  total: number;
+  this_month: number;
+}
+
+export interface CompletionRow {
+  course_id: number;
+  course_title: string;
+  enrolled: number;
+  completed: number;
+  rate: number; // 0–100
+}
+
+export interface CompletionsReport {
+  overall_rate: number; // 0–100
+  rows: CompletionRow[];
+}
+
+export interface TopCourseRow {
+  course_id: number;
+  title: string;
+  enrollments: number;
+  revenue: number;
+  completion_rate: number; // 0–100
+}
+
+// ---------------------------------------------------------------------------
+// Instructor / course builder
+// ---------------------------------------------------------------------------
+
+export interface InstructorDashboard {
+  courses_count: number;
+  students_count: number;
+  completions_count: number;
+  recent_courses: AdminCourse[];
+}
+
+export interface BuilderContent {
+  id: number;
+  lesson_id: number;
+  type: LessonContentType;
+  url: string | null;
+  html: string | null;
+  order: number;
+}
+
+export interface BuilderLesson {
+  id: number;
+  section_id: number;
+  title_en: string;
+  title_ar: string;
+  duration_minutes: number;
+  order: number;
+  is_published: boolean;
+  content: BuilderContent[];
+}
+
+export interface BuilderQuestion {
+  id: number;
+  quiz_id: number;
+  type: QuizQuestionType;
+  prompt: string;
+  options: string[];
+  /** Index of the correct option (mc/true_false); null for fill_blank. */
+  correct_index: number | null;
+  explanation: string | null;
+}
+
+export interface BuilderQuiz {
+  id: number;
+  section_id: number;
+  title: string;
+  pass_score: number;
+  questions: BuilderQuestion[];
+}
+
+export interface BuilderSection {
+  id: number;
+  course_id: number;
+  title_en: string;
+  title_ar: string;
+  order: number;
+  is_published: boolean;
+  lessons: BuilderLesson[];
+  quiz: BuilderQuiz | null;
+}
+
+export interface CourseStructure {
+  course_id: number;
+  course_title: string;
+  sections: BuilderSection[];
+}
+
+export interface SectionInput {
+  title_en: string;
+  title_ar: string;
+  is_published: boolean;
+}
+
+export interface LessonInput {
+  title_en: string;
+  title_ar: string;
+  duration_minutes: number;
+  is_published: boolean;
+}
+
+export interface ContentInput {
+  type: LessonContentType;
+  url: string | null;
+  html: string | null;
+}
+
+export interface QuizInput {
+  title: string;
+  pass_score: number;
+}
+
+export interface QuestionInput {
+  type: QuizQuestionType;
+  prompt: string;
+  options: string[];
+  correct_index: number | null;
+  explanation: string | null;
+}
