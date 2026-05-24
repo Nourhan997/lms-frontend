@@ -3,6 +3,7 @@
 import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/Input";
+import { usePublicCategories } from "@/lib/hooks/useCourses";
 import type { Course } from "@/lib/types";
 
 export type LevelFilter = Course["level"] | "";
@@ -12,6 +13,8 @@ export interface CourseFiltersValue {
   search: string;
   level: LevelFilter;
   language: LanguageFilter;
+  /** Category slug, or "" for all. */
+  category: string;
 }
 
 export interface CourseFiltersProps {
@@ -24,6 +27,7 @@ const selectClass =
 
 export function CourseFilters({ value, onChange }: CourseFiltersProps) {
   const t = useTranslations("courses");
+  const categories = usePublicCategories();
 
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -38,6 +42,20 @@ export function CourseFilters({ value, onChange }: CourseFiltersProps) {
           }
         />
       </div>
+
+      <select
+        aria-label={t("filterCategory")}
+        className={selectClass}
+        value={value.category}
+        onChange={(e) => onChange({ ...value, category: e.target.value })}
+      >
+        <option value="">{t("allCategories")}</option>
+        {categories.data?.map((category) => (
+          <option key={category.id} value={category.slug}>
+            {category.name}
+          </option>
+        ))}
+      </select>
 
       <select
         aria-label={t("filterLevel")}

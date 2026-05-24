@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LMS Frontend
 
-## Getting Started
+The web client for the Learning Management System — a bilingual (English / Arabic, RTL-aware) platform for browsing courses, learning with video/audio/text/PDF lessons, taking quizzes and placement tests, earning certificates, paying for courses, and managing everything through instructor and admin panels.
 
-First, run the development server:
+## Stack
+
+- **Next.js 14** (App Router)
+- **TypeScript** (strict, no `any`)
+- **Tailwind CSS** (+ `@tailwindcss/typography`)
+- **React Query** (`@tanstack/react-query`) for all server data
+- **Zustand** (+ persist) for auth/session state
+- **react-hook-form + zod** for forms
+- **next-intl** for i18n (en/ar) without locale-prefixed routes
+- **Radix UI** primitives, **lucide-react** icons, **react-player** for video
+- **isomorphic-dompurify** for the single sanctioned rich-text injection
+
+## Quick start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs at http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build      # production build
+npm run lint       # eslint
+npx tsc --noEmit   # typecheck
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment variables
 
-## Learn More
+Create `.env.local`:
 
-To learn more about Next.js, take a look at the following resources:
+```
+NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable | Description |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | Base URL of the backend API. |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Folder structure
 
-## Deploy on Vercel
+```
+app/                       App Router routes
+  (public)/                Public pages (landing, courses, blog, certificates, placement)
+  (auth)/                  Login & register
+  dashboard/               Student area (auth)
+  instructor/              Instructor panel (auth)
+  admin/                   Admin panel (auth)
+  layout.tsx               Root layout (providers, fonts, RTL dir)
+  loading.tsx / error.tsx / not-found.tsx
+components/
+  ui/                      Reusable primitives (Button, Input, Modal, Tabs, toast, ...)
+  layout/                  Navbar, Sidebar, Footer, DashboardLayout, PageHeader
+  courses/ quiz/ auth/ admin/ instructor/ payment/ landing/   Feature components
+lib/
+  api/                     Axios client + typed endpoint functions
+  hooks/                   React Query hooks (co-located query keys)
+  store/                   Zustand auth store (cookie-persisted)
+  types/                   Shared domain types
+  utils/                   cn(), formatting, helpers
+i18n/                      next-intl config + request resolver
+messages/                  en.json / ar.json translations
+middleware.ts              Locale detection + role-based route protection
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Routes overview
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Public:** `/` landing · `/courses` catalog (+ `?category=`) · `/courses/[slug]` detail · `/courses/[slug]/checkout` · `/blog` · `/blog/[slug]` · `/certificates/[uid]` verification · `/placement` · `/placement/[subject]`
+
+**Auth:** `/login` · `/register`
+
+**Student** (`/dashboard`): home · `courses` (My Courses) · `courses/[enrollmentId]` player · `courses/[enrollmentId]/quiz/[sectionId]` · `certificates` · `payments` · `notifications` · `profile`
+
+**Instructor** (`/instructor`): dashboard · `courses` · `courses/create` · `courses/[id]/edit` · `courses/[id]/builder` · `students`
+
+**Admin** (`/admin`): dashboard · `courses` (+ create/edit) · `students` (+ detail) · `instructors` · `payments` · `reports` · `blog` (+ create/edit) · `settings` · `audit-log`
+
+## Conventions
+
+See [CLAUDE.md](./CLAUDE.md) for the engineering conventions (server data via React Query, forms via react-hook-form + zod, Tailwind-only styling, RTL logical utilities, etc.).
+
+## Built by
+
+The LMS team.

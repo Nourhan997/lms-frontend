@@ -8,6 +8,7 @@ import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
 import { DataTable, type Column } from "@/components/admin/DataTable";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { toast } from "@/components/ui/use-toast";
 import {
   useAdminDashboard,
   useAdminPayments,
@@ -158,6 +159,7 @@ export default function AdminPaymentsPage() {
         onConfirm={() => {
           if (refundTarget) {
             refund.mutate(refundTarget.id, {
+              onSuccess: () => toast({ title: t("toastRefunded"), variant: "success" }),
               onSettled: () => setRefundTarget(null),
             });
           }

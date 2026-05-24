@@ -18,6 +18,8 @@ export interface CourseListParams {
   search?: string;
   level?: Course["level"];
   language?: Course["language"];
+  /** Category slug. */
+  category?: string;
 }
 
 export async function getCourses(

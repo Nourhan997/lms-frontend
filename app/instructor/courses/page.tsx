@@ -11,6 +11,7 @@ import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 import { DataTable, type Column } from "@/components/admin/DataTable";
 import { ActionsMenu } from "@/components/admin/ActionsMenu";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { toast } from "@/components/ui/use-toast";
 import {
   useArchiveInstructorCourse,
   useInstructorCourses,
@@ -97,7 +98,11 @@ export default function InstructorCoursesPage() {
               label: t("publish"),
               icon: <Send className="h-4 w-4" aria-hidden="true" />,
               disabled: c.status === "published",
-              onSelect: () => publish.mutate(c.id),
+              onSelect: () =>
+                publish.mutate(c.id, {
+                  onSuccess: () =>
+                    toast({ title: t("toastPublished"), variant: "success" }),
+                }),
             },
             {
               label: t("archive"),
@@ -168,6 +173,7 @@ export default function InstructorCoursesPage() {
         onConfirm={() => {
           if (archiveTarget) {
             archive.mutate(archiveTarget.id, {
+              onSuccess: () => toast({ title: t("toastArchived"), variant: "success" }),
               onSettled: () => setArchiveTarget(null),
             });
           }

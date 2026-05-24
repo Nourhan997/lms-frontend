@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -12,13 +13,17 @@ import { CourseList } from "@/components/courses/CourseList";
 import { useCourses } from "@/lib/hooks/useCourses";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 
-export default function CoursesPage() {
+function CoursesCatalog() {
   const t = useTranslations("courses");
-  const [filters, setFilters] = useState<CourseFiltersValue>({
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [filters, setFilters] = useState<CourseFiltersValue>(() => ({
     search: "",
     level: "",
     language: "",
-  });
+    category: searchParams.get("category") ?? "",
+  }));
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(filters.search, 400);
 
@@ -27,12 +32,17 @@ export default function CoursesPage() {
     search: debouncedSearch || undefined,
     level: filters.level || undefined,
     language: filters.language || undefined,
+    category: filters.category || undefined,
   });
 
-  // Any filter change resets pagination to the first page.
+  // Any filter change resets pagination; the category is mirrored to the URL.
   function handleFiltersChange(next: CourseFiltersValue) {
     setFilters(next);
     setPage(1);
+    const params = new URLSearchParams();
+    if (next.category) params.set("category", next.category);
+    const qs = params.toString();
+    router.replace(qs ? `/courses?${qs}` : "/courses", { scroll: false });
   }
 
   const totalPages = query.data
@@ -75,5 +85,13 @@ export default function CoursesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CoursesPage() {
+  return (
+    <Suspense>
+      <CoursesCatalog />
+    </Suspense>
   );
 }

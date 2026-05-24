@@ -265,6 +265,7 @@ export interface AdminCourse extends Course {
 export interface Category {
   id: number;
   name: string;
+  slug: string;
 }
 
 export interface CategoryWithCount extends Category {

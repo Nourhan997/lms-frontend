@@ -17,6 +17,8 @@ import {
   getInstructorCourse,
   getInstructorCourses,
   getInstructorDashboard,
+  getInstructorStudents,
+  type InstructorStudentRow,
   publishInstructorCourse,
   updateContent,
   updateInstructorCourse,
@@ -51,6 +53,7 @@ export const instructorKeys = {
   courses: (filters: InstructorCourseFilters) =>
     ["instructor", "courses", filters] as const,
   course: (id: number) => ["instructor", "course", id] as const,
+  students: (page: number) => ["instructor", "students", page] as const,
   structure: (courseId: number) =>
     ["instructor", "structure", courseId] as const,
 };
@@ -124,6 +127,14 @@ export function useArchiveInstructorCourse() {
     mutationFn: archiveInstructorCourse,
     onSuccess: () =>
       qc.invalidateQueries({ queryKey: ["instructor", "courses"] }),
+  });
+}
+
+export function useInstructorStudents(page = 1) {
+  return useQuery<Paginated<InstructorStudentRow>, ApiError>({
+    queryKey: instructorKeys.students(page),
+    queryFn: () => getInstructorStudents(page),
+    enabled: useInstructorEnabled(),
   });
 }
 

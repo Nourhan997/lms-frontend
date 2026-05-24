@@ -15,6 +15,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { StatsCard } from "@/components/courses/StatsCard";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { toast } from "@/components/ui/use-toast";
 import {
   useActivateStudent,
   useAdminStudent,
@@ -63,7 +64,11 @@ export default function AdminStudentDetailPage() {
 
   function confirmToggle() {
     const mutation = isActive ? suspend : activate;
-    mutation.mutate(s.id, { onSettled: () => setConfirmOpen(false) });
+    const successKey = isActive ? "toastSuspended" : "toastActivated";
+    mutation.mutate(s.id, {
+      onSuccess: () => toast({ title: t(successKey), variant: "success" }),
+      onSettled: () => setConfirmOpen(false),
+    });
   }
 
   return (

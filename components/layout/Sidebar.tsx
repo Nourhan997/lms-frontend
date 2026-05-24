@@ -12,7 +12,6 @@ import {
   FileText,
   Home,
   LayoutDashboard,
-  PencilRuler,
   Settings,
   Shield,
   User,
@@ -50,7 +49,6 @@ const LINKS_BY_ROLE: Record<UserRole, { root: string; links: SidebarLink[] }> = 
     links: [
       { href: "/instructor", labelKey: "dashboard", icon: LayoutDashboard },
       { href: "/instructor/courses", labelKey: "myCourses", icon: BookOpen },
-      { href: "/instructor/builder", labelKey: "courseBuilder", icon: PencilRuler },
       { href: "/instructor/students", labelKey: "students", icon: Users },
       { href: "/instructor/profile", labelKey: "profile", icon: User },
     ],

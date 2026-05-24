@@ -12,6 +12,7 @@ import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 import { DataTable, type Column } from "@/components/admin/DataTable";
 import { ActionsMenu } from "@/components/admin/ActionsMenu";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { toast } from "@/components/ui/use-toast";
 import {
   useAdminCourses,
   useArchiveCourse,
@@ -63,7 +64,11 @@ export default function AdminCoursesPage() {
   function confirmAction() {
     if (!pending) return;
     const mutation = pending.type === "archive" ? archive : remove;
-    mutation.mutate(pending.course.id, { onSettled: () => setPending(null) });
+    const successKey = pending.type === "archive" ? "toastArchived" : "toastDeleted";
+    mutation.mutate(pending.course.id, {
+      onSuccess: () => toast({ title: t(successKey), variant: "success" }),
+      onSettled: () => setPending(null),
+    });
   }
 
   const columns: Column<AdminCourse>[] = [
@@ -132,7 +137,11 @@ export default function AdminCoursesPage() {
               label: t("publish"),
               icon: <Send className="h-4 w-4" aria-hidden="true" />,
               disabled: c.status === "published",
-              onSelect: () => publish.mutate(c.id),
+              onSelect: () =>
+                publish.mutate(c.id, {
+                  onSuccess: () =>
+                    toast({ title: t("toastPublished"), variant: "success" }),
+                }),
             },
             {
               label: t("archive"),

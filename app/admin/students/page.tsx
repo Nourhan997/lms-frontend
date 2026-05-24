@@ -11,6 +11,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { DataTable, type Column } from "@/components/admin/DataTable";
 import { ActionsMenu } from "@/components/admin/ActionsMenu";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { toast } from "@/components/ui/use-toast";
 import {
   useActivateStudent,
   useAdminStudents,
@@ -60,7 +61,11 @@ export default function AdminStudentsPage() {
   function confirmAction() {
     if (!pending) return;
     const mutation = pending.type === "suspend" ? suspend : activate;
-    mutation.mutate(pending.student.id, { onSettled: () => setPending(null) });
+    const successKey = pending.type === "suspend" ? "toastSuspended" : "toastActivated";
+    mutation.mutate(pending.student.id, {
+      onSuccess: () => toast({ title: t(successKey), variant: "success" }),
+      onSettled: () => setPending(null),
+    });
   }
 
   const columns: Column<AdminStudent>[] = [

@@ -82,6 +82,26 @@ export async function archiveInstructorCourse(id: number): Promise<AdminCourse> 
   return data;
 }
 
+// --- Students --------------------------------------------------------------
+
+export interface InstructorStudentRow {
+  enrollment_id: number;
+  student_name: string;
+  course_title: string;
+  progress: number;
+  enrolled_at: string;
+}
+
+export async function getInstructorStudents(
+  page = 1,
+): Promise<Paginated<InstructorStudentRow>> {
+  const { data } = await apiClient.get<Paginated<InstructorStudentRow>>(
+    "/instructor/students",
+    { params: { page } },
+  );
+  return data;
+}
+
 // --- Course structure ------------------------------------------------------
 
 export async function getCourseStructure(
