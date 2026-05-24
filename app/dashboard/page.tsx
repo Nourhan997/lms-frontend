@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Award, BookOpen, CheckCircle2 } from "lucide-react";
+import { Award, BookOpen, CheckCircle2, Compass } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatsCard } from "@/components/courses/StatsCard";
@@ -56,14 +56,26 @@ export default function StudentDashboardPage() {
 
       {/* Placement prompt */}
       {me.data && !me.data.placement_completed && (
-        <Alert variant="info" title={t("placementTitle")} className="mb-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <span>{t("placementBody")}</span>
-            <Link href="/dashboard/placement">
-              <Button size="sm">{t("placementCta")}</Button>
+        <Card className="mb-6 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:border-blue-900 dark:from-blue-950 dark:to-indigo-950">
+          <CardContent className="flex flex-col gap-4 p-6 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white">
+                <Compass className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-50">
+                  {t("placementTitle")}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {t("placementBody")}
+                </p>
+              </div>
+            </div>
+            <Link href="/placement" className="shrink-0">
+              <Button>{t("placementCta")}</Button>
             </Link>
-          </div>
-        </Alert>
+          </CardContent>
+        </Card>
       )}
 
       {/* Stats */}

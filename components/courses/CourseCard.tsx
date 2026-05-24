@@ -5,6 +5,7 @@ import Image from "next/image";
 import { GraduationCap } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Badge, type BadgeVariant } from "@/components/ui/Badge";
+import { EnrollButton } from "@/components/courses/EnrollButton";
 import { formatPrice } from "@/lib/utils/format";
 import type { Course, Locale } from "@/lib/types";
 
@@ -25,12 +26,14 @@ export function CourseCard({ course }: { course: Course }) {
   const locale = useLocale() as Locale;
   const price = formatPrice(course.price, locale);
 
+  const detailPath = `/courses/${course.slug}`;
+
   return (
-    <Link
-      href={`/courses/${course.slug}`}
-      className="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-950"
-    >
-      <div className="relative aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+    <div className="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-950">
+      <Link
+        href={detailPath}
+        className="relative block aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-800"
+      >
         {course.thumbnail_url ? (
           <Image
             src={course.thumbnail_url}
@@ -44,7 +47,7 @@ export function CourseCard({ course }: { course: Course }) {
             <GraduationCap className="h-10 w-10" aria-hidden="true" />
           </div>
         )}
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-center justify-between gap-2">
@@ -56,13 +59,19 @@ export function CourseCard({ course }: { course: Course }) {
           </span>
         </div>
 
-        <h3 className="line-clamp-2 font-medium text-gray-900 dark:text-gray-50">
-          {course.title}
-        </h3>
+        <Link href={detailPath}>
+          <h3 className="line-clamp-2 font-medium text-gray-900 hover:underline dark:text-gray-50">
+            {course.title}
+          </h3>
+        </Link>
         <p className="line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
           {course.description}
         </p>
+
+        <div className="mt-auto pt-3">
+          <EnrollButton course={course} size="sm" />
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }

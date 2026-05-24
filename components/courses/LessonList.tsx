@@ -1,6 +1,7 @@
 "use client";
 
-import { Check, Lock, PlayCircle } from "lucide-react";
+import Link from "next/link";
+import { Check, ClipboardList, Lock, PlayCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { CourseSection, LessonWithProgress } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
@@ -9,6 +10,8 @@ export interface LessonListProps {
   sections: CourseSection[];
   activeLessonId: number | null;
   onSelect: (lesson: LessonWithProgress) => void;
+  /** Needed to build section-quiz links. */
+  enrollmentId: number;
 }
 
 /** Sidebar navigator: lessons grouped by section, with completion status. */
@@ -16,8 +19,10 @@ export function LessonList({
   sections,
   activeLessonId,
   onSelect,
+  enrollmentId,
 }: LessonListProps) {
   const t = useTranslations("learn");
+  const tQuiz = useTranslations("quiz");
   const ordered = [...sections].sort((a, b) => a.order - b.order);
 
   return (
@@ -84,6 +89,16 @@ export function LessonList({
                 );
               })}
             </ul>
+
+            {section.quiz_id ? (
+              <Link
+                href={`/dashboard/courses/${enrollmentId}/quiz/${section.id}`}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-900"
+              >
+                <ClipboardList className="h-5 w-5 shrink-0" aria-hidden="true" />
+                {tQuiz("start")}
+              </Link>
+            ) : null}
           </div>
         );
       })}

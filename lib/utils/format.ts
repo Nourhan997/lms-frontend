@@ -1,5 +1,8 @@
 import type { Locale } from "@/lib/types";
 
+/** Default platform currency (ISO 4217). */
+export const DEFAULT_CURRENCY = "OMR";
+
 /**
  * Format a course price. Returns null when free so the caller can render a
  * localized "Free" label instead.
@@ -7,7 +10,7 @@ import type { Locale } from "@/lib/types";
 export function formatPrice(
   amount: number,
   locale: Locale,
-  currency = "USD",
+  currency = DEFAULT_CURRENCY,
 ): string | null {
   if (amount <= 0) return null;
   return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {

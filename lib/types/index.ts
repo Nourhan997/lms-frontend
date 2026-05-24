@@ -53,6 +53,8 @@ export interface CourseDetail extends Course {
   instructor_name: string | null;
   students_count: number;
   rating: number | null;
+  /** Number of sections, when the API provides it (used on checkout). */
+  sections_count?: number;
 }
 
 export type LessonContentType = "video" | "audio" | "text" | "pdf";
@@ -82,6 +84,8 @@ export interface CourseSection {
   title: string;
   order: number;
   lessons: LessonWithProgress[];
+  /** Set when the section has an end-of-section quiz. */
+  quiz_id?: number | null;
 }
 
 /** Full learning payload for an enrolled course (player view). */
@@ -126,28 +130,67 @@ export interface Notification {
   link?: string | null;
 }
 
-export interface Quiz {
-  id: number;
-  course_id: number;
-  title: string;
-  questions: QuizQuestion[];
-}
+export type QuizQuestionType = "multiple_choice" | "true_false" | "fill_blank";
 
 export interface QuizQuestion {
   id: number;
+  type: QuizQuestionType;
   prompt: string;
+  /** Selectable options for multiple_choice / true_false. Empty for fill_blank. */
   options: string[];
   // Correct answer is resolved server-side; never trust the client.
 }
 
-export interface QuizResult {
+export interface Quiz {
+  id: number;
+  course_id: number;
+  /** Present for section quizzes; null for placement/standalone quizzes. */
+  section_id: number | null;
+  title: string;
+  /** Passing threshold as a percentage (0–100). */
+  pass_score: number;
+  questions: QuizQuestion[];
+}
+
+/**
+ * A single answer. Option index (number) for multiple_choice / true_false,
+ * free text (string) for fill_blank.
+ */
+export type QuizAnswer = number | string;
+
+/** Per-question outcome returned with a graded attempt. */
+export interface QuizQuestionResult {
+  question_id: number;
+  prompt: string;
+  your_answer: string;
+  correct_answer: string;
+  correct: boolean;
+}
+
+export interface QuizAttempt {
   id: number;
   quiz_id: number;
-  user_id: number;
-  score: number;
+  score: number; // percentage 0–100
   passed: boolean;
   submitted_at: string;
+  results: QuizQuestionResult[];
 }
+
+export type PlacementSubject = "english" | "french";
+
+export interface PlacementResult {
+  id: number;
+  subject: PlacementSubject;
+  score: number; // percentage 0–100
+  /** CEFR-style code, e.g. "B1". */
+  level_code: string;
+  /** Human-readable level, e.g. "Intermediate". */
+  level_label: string;
+  suggested_course: Course | null;
+  completed_at: string;
+}
+
+export type PaymentStatus = "pending" | "succeeded" | "failed" | "refunded";
 
 export interface Payment {
   id: number;
@@ -155,8 +198,10 @@ export interface Payment {
   course_id: number;
   amount: number;
   currency: string;
-  status: "pending" | "succeeded" | "failed" | "refunded";
+  status: PaymentStatus;
   created_at: string;
+  /** Embedded course, when the API expands the relation (history list). */
+  course?: Course;
 }
 
 /** Consistent error shape thrown by the API client. */

@@ -2,23 +2,19 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { BookOpen, Clock, GraduationCap, Users } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Badge, type BadgeVariant } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { CoursePlayer } from "@/components/courses/CoursePlayer";
 import { CourseCurriculum } from "@/components/courses/CourseCurriculum";
-import { toast } from "@/components/ui/use-toast";
+import { EnrollButton } from "@/components/courses/EnrollButton";
 import { useCourse } from "@/lib/hooks/useCourses";
-import { useEnrollments, useEnroll } from "@/lib/hooks/useEnrollments";
-import { useAuthStore } from "@/lib/store/authStore";
-import { useHasMounted } from "@/lib/hooks/useHasMounted";
+import { useEnrollments } from "@/lib/hooks/useEnrollments";
 import { formatPrice, totalDurationMinutes } from "@/lib/utils/format";
 import type { Course, Lesson, Locale } from "@/lib/types";
 
@@ -42,11 +38,6 @@ export default function CourseDetailPage() {
 
   const course = useCourse(slug);
   const enrollments = useEnrollments();
-  const enrollMutation = useEnroll();
-
-  const mounted = useHasMounted();
-  const token = useAuthStore((s) => s.token);
-  const isLoggedIn = mounted && Boolean(token);
 
   const isEnrolled = Boolean(
     course.data &&
@@ -64,14 +55,6 @@ export default function CourseDetailPage() {
     );
     if (firstPlayable) setActiveLesson(firstPlayable);
   }, [course.data, isEnrolled, activeLesson]);
-
-  function handleEnroll() {
-    if (!course.data) return;
-    enrollMutation.mutate(course.data.id, {
-      onSuccess: () => toast({ title: t("enrollSuccess"), variant: "success" }),
-      onError: () => toast({ title: t("enrollError"), variant: "destructive" }),
-    });
-  }
 
   if (course.isLoading) {
     return (
@@ -182,23 +165,7 @@ export default function CourseDetailPage() {
                 </li>
               </ul>
 
-              {!isLoggedIn ? (
-                <Link href="/login">
-                  <Button fullWidth>{t("loginToEnroll")}</Button>
-                </Link>
-              ) : isEnrolled ? (
-                <Button fullWidth variant="secondary" disabled>
-                  {t("enrolled")}
-                </Button>
-              ) : (
-                <Button
-                  fullWidth
-                  isLoading={enrollMutation.isPending}
-                  onClick={handleEnroll}
-                >
-                  {t("enroll")}
-                </Button>
-              )}
+              <EnrollButton course={detail} fullWidth />
             </CardContent>
           </Card>
         </aside>

@@ -92,6 +92,7 @@ export default function CoursePlayerPage() {
               sections={sections}
               activeLessonId={activeLessonId}
               onSelect={(lesson) => setActiveLessonId(lesson.id)}
+              enrollmentId={enrollmentId}
             />
           </div>
         </aside>
