@@ -202,6 +202,9 @@ export interface Payment {
   created_at: string;
   /** Embedded course, when the API expands the relation (history list). */
   course?: Course;
+  /** Admin views only. */
+  student_name?: string | null;
+  gateway?: string | null;
 }
 
 /** Consistent error shape thrown by the API client. */
@@ -217,4 +220,130 @@ export interface Paginated<T> {
   page: number;
   per_page: number;
   total: number;
+}
+
+// ---------------------------------------------------------------------------
+// Admin domain
+// ---------------------------------------------------------------------------
+
+export type StudentStatus = "active" | "suspended";
+
+export interface AdminStudent {
+  id: number;
+  name: string;
+  email: string;
+  avatar_url: string | null;
+  status: StudentStatus;
+  enrollments_count: number;
+  created_at: string;
+}
+
+export interface AdminStudentDetail extends AdminStudent {
+  role: UserRole;
+  completed_count: number;
+  certificates_count: number;
+  total_spent: number;
+  enrollments: Enrollment[];
+  payments: Payment[];
+  certificates: Certificate[];
+}
+
+export type CourseStatus = "draft" | "published" | "archived";
+
+export interface AdminCourse extends Course {
+  status: CourseStatus;
+  instructor_name: string | null;
+  enrollments_count: number;
+  // Raw bilingual fields, present on the single-course (edit) response.
+  title_en?: string;
+  title_ar?: string;
+  description_en?: string;
+  description_ar?: string;
+  category_id?: number;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+}
+
+/** Languages a course can be taught in (superset of the UI Locale). */
+export type CourseLanguage = "en" | "ar" | "fr";
+
+export interface AdminCourseInput {
+  title_en: string;
+  title_ar: string;
+  description_en: string;
+  description_ar: string;
+  category_id: number;
+  level: Course["level"];
+  language: CourseLanguage;
+  price: number;
+  thumbnail_url: string | null;
+  status: CourseStatus;
+}
+
+export type BlogStatus = "draft" | "published";
+
+export interface BlogPost {
+  id: number;
+  title: string;
+  title_en: string;
+  title_ar: string;
+  body_en: string;
+  body_ar: string;
+  slug: string;
+  status: BlogStatus;
+  is_published: boolean;
+  thumbnail_url: string | null;
+  published_at: string | null;
+  created_at: string;
+}
+
+export interface AdminBlogInput {
+  title_en: string;
+  title_ar: string;
+  body_en: string;
+  body_ar: string;
+  thumbnail_url: string | null;
+  is_published: boolean;
+}
+
+export interface RecentEnrollment {
+  id: number;
+  student_name: string;
+  course_title: string;
+  enrolled_at: string;
+  status: "active" | "completed";
+}
+
+export interface AdminDashboard {
+  total_students: number;
+  total_courses: number;
+  total_revenue: number;
+  active_enrollments: number;
+  certificates_issued: number;
+  recent_enrollments: RecentEnrollment[];
+}
+
+export interface RevenuePoint {
+  /** Period label, e.g. "2026-05". */
+  month: string;
+  revenue: number;
+}
+
+export interface AdminSettings {
+  platform_name: string;
+  platform_tagline: string;
+  support_email: string;
+  logo_url: string | null;
+  primary_color: string;
+  secondary_color: string;
+  from_name: string;
+  from_address: string;
+  footer_text: string;
+  default_language: Locale;
+  default_currency: string;
+  allow_self_registration: boolean;
+  placement_test_required: boolean;
 }
