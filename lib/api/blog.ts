@@ -47,3 +47,19 @@ export async function setBlogPublished(
 export async function deleteBlogPost(id: number): Promise<void> {
   await apiClient.delete(`/admin/blog/${id}`);
 }
+
+// --- Public (no auth) ------------------------------------------------------
+
+export async function getPublicBlogPosts(
+  page = 1,
+): Promise<Paginated<BlogPost>> {
+  const { data } = await apiClient.get<Paginated<BlogPost>>("/blog", {
+    params: { page },
+  });
+  return data;
+}
+
+export async function getPublicBlogPost(slug: string): Promise<BlogPost> {
+  const { data } = await apiClient.get<BlogPost>(`/blog/${slug}`);
+  return data;
+}

@@ -3,10 +3,13 @@ import type {
   AdminCourse,
   AdminCourseInput,
   AdminDashboard,
+  AdminInstructor,
   AdminStudent,
   AdminStudentDetail,
+  AuditLogEntry,
   Category,
   CourseStatus,
+  CreateInstructorInput,
   Paginated,
   Payment,
   PaymentStatus,
@@ -152,6 +155,66 @@ export async function getAdminPayments(
 export async function refundPayment(id: number): Promise<Payment> {
   const { data } = await apiClient.post<Payment>(
     `/admin/payments/${id}/refund`,
+  );
+  return data;
+}
+
+// --- Instructors -----------------------------------------------------------
+
+export interface InstructorFilters {
+  page?: number;
+  search?: string;
+}
+
+export async function getInstructors(
+  filters: InstructorFilters = {},
+): Promise<Paginated<AdminInstructor>> {
+  const { data } = await apiClient.get<Paginated<AdminInstructor>>(
+    "/admin/instructors",
+    { params: filters },
+  );
+  return data;
+}
+
+export async function createInstructor(
+  payload: CreateInstructorInput,
+): Promise<AdminInstructor> {
+  const { data } = await apiClient.post<AdminInstructor>(
+    "/admin/instructors",
+    payload,
+  );
+  return data;
+}
+
+export async function suspendInstructor(id: number): Promise<AdminInstructor> {
+  const { data } = await apiClient.post<AdminInstructor>(
+    `/admin/instructors/${id}/suspend`,
+  );
+  return data;
+}
+
+export async function activateInstructor(id: number): Promise<AdminInstructor> {
+  const { data } = await apiClient.post<AdminInstructor>(
+    `/admin/instructors/${id}/activate`,
+  );
+  return data;
+}
+
+// --- Audit log -------------------------------------------------------------
+
+export interface AuditLogFilters {
+  page?: number;
+  action?: string;
+  from?: string;
+  to?: string;
+}
+
+export async function getAuditLog(
+  filters: AuditLogFilters = {},
+): Promise<Paginated<AuditLogEntry>> {
+  const { data } = await apiClient.get<Paginated<AuditLogEntry>>(
+    "/admin/audit-log",
+    { params: filters },
   );
   return data;
 }

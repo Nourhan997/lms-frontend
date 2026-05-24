@@ -2,24 +2,31 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  activateInstructor,
   activateStudent,
   archiveCourse,
   createAdminCourse,
+  createInstructor,
   deleteCourse,
   getAdminCourse,
   getAdminCourses,
   getAdminDashboard,
   getAdminPayments,
+  getAuditLog,
   getCategories,
+  getInstructors,
   getRevenueReport,
   getStudent,
   getStudents,
   publishCourse,
   refundPayment,
+  suspendInstructor,
   suspendStudent,
   updateAdminCourse,
   uploadImage,
+  type AuditLogFilters,
   type CourseFilters,
+  type InstructorFilters,
   type PaymentFilters,
   type StudentFilters,
 } from "@/lib/api/admin";
@@ -43,12 +50,15 @@ import type {
   AdminCourse,
   AdminCourseInput,
   AdminDashboard,
+  AdminInstructor,
   AdminSettings,
   AdminStudent,
   AdminStudentDetail,
   ApiError,
+  AuditLogEntry,
   BlogPost,
   Category,
+  CreateInstructorInput,
   Paginated,
   Payment,
   RevenuePoint,
@@ -63,6 +73,10 @@ export const adminKeys = {
   courses: (filters: CourseFilters) => ["admin", "courses", filters] as const,
   course: (id: number) => ["admin", "course", id] as const,
   categories: ["admin", "categories"] as const,
+  instructors: (filters: InstructorFilters) =>
+    ["admin", "instructors", filters] as const,
+  auditLog: (filters: AuditLogFilters) =>
+    ["admin", "audit-log", filters] as const,
   payments: (filters: PaymentFilters) =>
     ["admin", "payments", filters] as const,
   blog: (filters: BlogFilters) => ["admin", "blog", filters] as const,
@@ -207,6 +221,53 @@ export function useDeleteCourse() {
     mutationFn: (id) => deleteCourse(id),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["admin", "courses"] }),
+  });
+}
+
+// --- Instructors -----------------------------------------------------------
+
+export function useAdminInstructors(filters: InstructorFilters = {}) {
+  return useQuery<Paginated<AdminInstructor>, ApiError>({
+    queryKey: adminKeys.instructors(filters),
+    queryFn: () => getInstructors(filters),
+    enabled: useAdminEnabled(),
+  });
+}
+
+export function useCreateInstructor() {
+  const queryClient = useQueryClient();
+  return useMutation<AdminInstructor, ApiError, CreateInstructorInput>({
+    mutationFn: createInstructor,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["admin", "instructors"] }),
+  });
+}
+
+export function useSuspendInstructor() {
+  const queryClient = useQueryClient();
+  return useMutation<AdminInstructor, ApiError, number>({
+    mutationFn: (id) => suspendInstructor(id),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["admin", "instructors"] }),
+  });
+}
+
+export function useActivateInstructor() {
+  const queryClient = useQueryClient();
+  return useMutation<AdminInstructor, ApiError, number>({
+    mutationFn: (id) => activateInstructor(id),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["admin", "instructors"] }),
+  });
+}
+
+// --- Audit log -------------------------------------------------------------
+
+export function useAuditLog(filters: AuditLogFilters = {}) {
+  return useQuery<Paginated<AuditLogEntry>, ApiError>({
+    queryKey: adminKeys.auditLog(filters),
+    queryFn: () => getAuditLog(filters),
+    enabled: useAdminEnabled(),
   });
 }
 

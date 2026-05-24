@@ -267,6 +267,48 @@ export interface Category {
   name: string;
 }
 
+export interface CategoryWithCount extends Category {
+  course_count: number;
+}
+
+export interface AdminInstructor {
+  id: number;
+  name: string;
+  email: string;
+  avatar_url: string | null;
+  is_active: boolean;
+  courses_count: number;
+  students_count: number;
+  created_at: string;
+}
+
+export interface CreateInstructorInput {
+  name: string;
+  email: string;
+  password: string;
+  bio: string;
+}
+
+export interface AuditLogEntry {
+  id: number;
+  created_at: string;
+  admin_name: string;
+  action: string;
+  target_type: string;
+  target_id: number | null;
+}
+
+/** Public certificate verification payload. */
+export interface PublicCertificate {
+  uid: string;
+  student_name: string;
+  course_title: string;
+  instructor_name: string | null;
+  issued_at: string;
+  serial: string;
+  valid: boolean;
+}
+
 /** Languages a course can be taught in (superset of the UI Locale). */
 export type CourseLanguage = "en" | "ar" | "fr";
 
@@ -298,6 +340,9 @@ export interface BlogPost {
   thumbnail_url: string | null;
   published_at: string | null;
   created_at: string;
+  author_name?: string | null;
+  /** Short summary for cards (public list). */
+  excerpt?: string | null;
 }
 
 export interface AdminBlogInput {

@@ -1,5 +1,16 @@
 import { apiClient } from "@/lib/api/client";
-import type { Course, CourseDetail, Paginated } from "@/lib/types";
+import type {
+  CategoryWithCount,
+  Course,
+  CourseDetail,
+  Paginated,
+} from "@/lib/types";
+
+/** Public course categories with their published course counts. */
+export async function getPublicCategories(): Promise<CategoryWithCount[]> {
+  const { data } = await apiClient.get<CategoryWithCount[]>("/categories");
+  return data;
+}
 
 export interface CourseListParams {
   page?: number;

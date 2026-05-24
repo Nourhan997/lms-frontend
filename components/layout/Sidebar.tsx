@@ -40,6 +40,7 @@ const LINKS_BY_ROLE: Record<UserRole, { root: string; links: SidebarLink[] }> = 
       { href: "/dashboard", labelKey: "dashboard", icon: Home },
       { href: "/dashboard/courses", labelKey: "myCourses", icon: BookOpen },
       { href: "/dashboard/certificates", labelKey: "certificates", icon: Award },
+      { href: "/dashboard/payments", labelKey: "payments", icon: CreditCard },
       { href: "/dashboard/notifications", labelKey: "notifications", icon: Bell, badge: true },
       { href: "/dashboard/profile", labelKey: "profile", icon: User },
     ],
